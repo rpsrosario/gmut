@@ -8,7 +8,7 @@
 ///   environment for test execution leads to unspecified behaviour.
 ///
 
-var env = argument1;
+var env = argument0;
 if (__tests_is_type(env, "test-environment")) {
   ds_map_destroy(env);
 }
