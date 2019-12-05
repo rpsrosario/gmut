@@ -54,9 +54,11 @@ switch (env[? "state"]) {
       ds_map_destroy(testDiscoveryEnv);
       
       // Update test environment
-      env[? "state" ] = "test-execution";
+      env[? "state" ] = "test-execution-initialization";
       ds_map_add_map(env, "metadata", testMetadata);
       ds_map_delete(env, "context");
+      
+      return true;
     } else {
       var name  = script_get_name(script);
       var group = undefined;
@@ -138,6 +140,26 @@ switch (env[? "state"]) {
       
       return true;
     }
+  } break;
+  
+  case "test-execution-initialization": {
+    // Prepare container for test results
+    var testResults = ds_map_create();
+    testResults[? "<type>" ] = "test-results-container"
+    ds_map_add_list(testResults, "executed-tests", ds_list_create());
+    
+    // Prepare the environment for test execution
+    var testExecutionEnv = ds_map_create();
+    testExecutionEnv[? "<type>"     ] = "test-execution-environment";
+    testExecutionEnv[? "next-group" ] = 0;
+    testExecutionEnv[? "next-test"  ] = 0;
+    ds_map_add_map(testExecutionEnv, "results", testResults);
+    
+    // Update test environment
+    ds_map_add_map(env, "context", testExecutionEnv);
+    env[? "state" ] = "test-execution";
+    
+    return true;
   } break;
   
 }
